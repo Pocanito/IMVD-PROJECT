@@ -1,0 +1,195 @@
+:root{
+  --bg-black:#000;
+  --top-ratio:20vh; /* fallback */
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg-black);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* 16:9 stage (fit inside viewport) */
+.stage{
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  overflow: hidden;
+
+  /* make it deterministic for any viewport: compute 16:9 fit */
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.stage::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:#000;
+  z-index:0;
+}
+
+.stage{
+  /* actual 16:9 container */
+  --w: 100vw;
+  --h: calc(100vw * 9 / 16);
+}
+
+@media (max-aspect-ratio: 16/9){
+  .stage{ --h: 100vh; --w: calc(100vh * 16 / 9); }
+}
+
+.stage > .top,
+.stage > .bottom{
+  position: relative;
+  z-index: 1;
+}
+
+/* Create the 16:9 container using an inner wrapper */
+body{ display:flex; }
+
+.stage{
+  padding:0;
+}
+
+main.stage{
+  width: var(--w);
+  height: var(--h);
+}
+
+.top{
+  position: relative;
+  width: 100%;
+  height: 20%;
+  background: #000;
+}
+
+/* Capa sólida para asegurar que el 20% superior sea 100% negro */
+.topSolid{
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 0;
+}
+
+.top > *:not(.topSolid){
+  position: relative;
+  z-index: 1;
+}
+
+.bottom{
+  width: 100%;
+  height: 80%;
+  background: #000;
+}
+
+.videoViewport{
+  width: 100%;
+  height: 100%;
+}
+
+.video{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background:#000;
+}
+
+.logoWrap{
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding-left: 3.5%;
+
+  /* start hidden to left */
+  transform: translateX(-120%);
+  opacity: 0;
+}
+
+.logo{
+  height: 70%;
+  width: auto;
+  user-select:none;
+  pointer-events:none;
+}
+
+/* Logo animation: enter -> wait -> exit, repeating forever */
+.logoWrap.anim{
+  animation: logoCycle 10s linear infinite;
+}
+
+@keyframes logoCycle{
+  0%   { transform: translateX(-120%); opacity: 0; }
+  8%   { opacity: 1; }
+  35%  { transform: translateX(0%); opacity: 1; }
+  70%  { transform: translateX(0%); opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+
+.gear{
+  position: absolute;
+  right: 2.5%;
+  bottom: 8%;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  opacity: 0.95;
+}
+
+.gear svg{ width: 48px; height: 48px; }
+
+.gear:active{ transform: scale(0.96); }
+
+.menuOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 50;
+  display: none;
+}
+
+.menuOverlay.open{ display:flex; align-items:center; justify-content:center; }
+
+.menu{
+  width: min(420px, 86vw);
+  background: #0a0a0a;
+  border: 2px solid #fff;
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.menuButtons{
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.menuBtn{
+  height: 64px;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  font-weight: 800;
+  color: #fff;
+  background: #101010;
+  border: 2px solid #fff;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.menuBtn:active{ transform: scale(0.99); }
+
+/* Optional text placeholder button state */
+.menuBtn.run{ background:#000; }

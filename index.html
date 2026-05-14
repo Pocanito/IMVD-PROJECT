@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>García Diseños Publicitarios</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ─── LAYOUT PRINCIPAL ─────────────────────────────── */
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── ZONA SUPERIOR 20% ────────────────────────────── */
+    #header {
+      width: 100%;
+      height: 20vh;
+      background: #000000;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Logo que recorre de izquierda a derecha */
+    #logo-wrap {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 85%;
+      /* Animación: sale desde fuera izquierda (-logoWidth) hasta fuera derecha (100vw) */
+      animation: logoScroll 10s linear infinite;
+      white-space: nowrap;
+    }
+
+    #logo-wrap img {
+      height: 100%;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 0 12px rgba(255,180,0,0.35));
+    }
+
+    @keyframes logoScroll {
+      0%   { left: -220px; }
+      100% { left: 100vw;  }
+    }
+
+    /* ─── ENGRANE – esquina inferior derecha del header ── */
+    #gear-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0.75;
+      transition: opacity .2s;
+    }
+    #gear-btn:hover { opacity: 1; }
+    #gear-btn svg {
+      width: 100%; height: 100%;
+      animation: gearSpin 6s linear infinite;
+    }
+    @keyframes gearSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ─── ZONA INFERIOR 80% – VIDEO ───────────────────── */
+    #video-zone {
+      width: 100%;
+      flex: 1;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #main-video {
+      /* Mantiene aspecto original del video */
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ─── PANTALLA PRINCIPAL (canvas) ──────────────────── */
+    #screen-main {
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── MENÚ DEL ENGRANE ─────────────────────────────── */
+    #menu-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #menu-overlay.active {
+      display: flex;
+    }
+
+    #menu-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 40px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 16px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .menu-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 28px 20px;
+      background: #1a1a1a;
+      border: 2px solid #333;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, transform .15s;
+      user-select: none;
+    }
+    .menu-btn:hover {
+      background: #242424;
+      border-color: #666;
+      transform: translateY(-2px);
+    }
+    .menu-btn .btn-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    /* RUN PROJECT ocupa toda la fila */
+    .menu-btn.run {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #e8a000, #ff4f00);
+      border-color: transparent;
+      font-size: 1.25rem;
+      letter-spacing: 0.2em;
+      padding: 32px;
+    }
+    .menu-btn.run:hover {
+      filter: brightness(1.15);
+      border-color: transparent;
+      transform: translateY(-2px);
+    }
+
+    /* Título del menú */
+    #menu-title {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #888;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── PANTALLA PRINCIPAL ── -->
+  <div id="screen-main">
+
+    <!-- 20% SUPERIOR -->
+    <div id="header">
+      <!-- Logo animado -->
+      <div id="logo-wrap">
+        <img src="IMG_000.PNG" alt="García Diseños Logo" id="logo-img"/>
+      </div>
+
+      <!-- Engrane -->
+      <div id="gear-btn" title="Configuración" onclick="openMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06
+                   a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09
+                   A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83
+                   l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09
+                   A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83
+                   l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09
+                   a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83
+                   l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09
+                   a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 80% INFERIOR – VIDEO -->
+    <div id="video-zone">
+      <video id="main-video"
+             src="Screen000.mp4"
+             autoplay loop muted playsinline
+             preload="auto">
+      </video>
+    </div>
+
+  </div><!-- /screen-main -->
+
+</div><!-- /app -->
+
+<!-- ── MENÚ OVERLAY ── -->
+<div id="menu-overlay" onclick="handleOverlayClick(event)">
+  <div id="menu-box">
+    <div id="menu-title">Panel de Control</div>
+
+    <div class="menu-btn" onclick="menuAction('video')">
+      <span class="btn-icon">🎬</span>
+      VIDEO
+    </div>
+
+    <div class="menu-btn" onclick="menuAction('logo')">
+      <span class="btn-icon">🖼️</span>
+      LOGO
+    </div>
+
+    <div class="menu-btn" onclick="menuAction('texto')">
+      <span class="btn-icon">✏️</span>
+      TEXTO
+    </div>
+
+    <div class="menu-btn run" onclick="runProject()">
+      <span class="btn-icon">▶</span>
+      RUN PROJECT
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Ajustar animación del logo según su ancho real ──
+  const logoImg = document.getElementById('logo-img');
+  const logoWrap = document.getElementById('logo-wrap');
+
+  function updateLogoAnimation() {
+    const w = logoWrap.offsetWidth || 220;
+    // Recrea el keyframe con el ancho real
+    const styleId = 'logo-kf';
+    let s = document.getElementById(styleId);
+    if (!s) { s = document.createElement('style'); s.id = styleId; document.head.appendChild(s); }
+    s.textContent = `
+      @keyframes logoScroll {
+        0%   { left: -${w + 20}px; }
+        100% { left: 100vw; }
+      }
+    `;
+    // Reinicia la animación
+    logoWrap.style.animation = 'none';
+    void logoWrap.offsetWidth; // reflow
+    logoWrap.style.animation = 'logoScroll 10s linear infinite';
+  }
+
+  logoImg.addEventListener('load', updateLogoAnimation);
+  window.addEventListener('resize', updateLogoAnimation);
+  // Por si ya cargó (cache)
+  if (logoImg.complete) updateLogoAnimation();
+
+  // ── Menú ──
+  function openMenu() {
+    document.getElementById('menu-overlay').classList.add('active');
+  }
+
+  function closeMenu() {
+    document.getElementById('menu-overlay').classList.remove('active');
+  }
+
+  function handleOverlayClick(e) {
+    // Cierra si se hace clic en el fondo, no en el box
+    if (e.target === document.getElementById('menu-overlay')) closeMenu();
+  }
+
+  function menuAction(tipo) {
+    // Placeholder – funciones a desarrollar en la siguiente fase
+    console.log('Acción seleccionada:', tipo);
+    // Por ahora solo notifica (sin alert para no interrumpir la presentación)
+  }
+
+  function runProject() {
+    closeMenu();
+    // Asegura que el video siga corriendo
+    const v = document.getElementById('main-video');
+    if (v.paused) v.play();
+  }
+
+  // ── Video: forzar play si el navegador lo pausó ──
+  document.getElementById('main-video').addEventListener('pause', function() {
+    this.play();
+  });
+</script>
+
+</body>
+</html>

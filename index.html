@@ -1,326 +1,673 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>García Diseños Publicitarios</title>
   <style>
-    *, *::before, *::after {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
     html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
-      background: #000;
+      width:100%; height:100%;
+      overflow:hidden;
+      background:#000;
       font-family: 'Segoe UI', sans-serif;
     }
 
-    /* ─── LAYOUT PRINCIPAL ─────────────────────────────── */
+    /* ══════════════════════════════════════════
+       LAYOUT PRINCIPAL  20 / 70 / 10
+    ══════════════════════════════════════════ */
     #app {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+      width:100vw; height:100vh;
+      display:flex; flex-direction:column;
     }
 
-    /* ─── ZONA SUPERIOR 20% ────────────────────────────── */
+    /* ── 20% SUPERIOR – HEADER ── */
     #header {
-      width: 100%;
-      height: 20vh;
-      background: #000000;
-      position: relative;
-      overflow: hidden;
-      flex-shrink: 0;
+      width:100%; height:20vh;
+      background:#000;
+      position:relative;
+      overflow:hidden;
+      flex-shrink:0;
     }
 
-    /* Logo que recorre de izquierda a derecha */
-    #logo-wrap {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 85%;
-      /* Animación: sale desde fuera izquierda (-logoWidth) hasta fuera derecha (100vw) */
-      animation: logoScroll 10s linear infinite;
-      white-space: nowrap;
+    /* Pista de logos – se mueve con JS */
+    #logo-track {
+      position:absolute;
+      top:50%; transform:translateY(-50%);
+      height:85%;
+      display:flex;
+      align-items:center;
+      gap:80px;
+      white-space:nowrap;
+      will-change:transform;
     }
 
-    #logo-wrap img {
-      height: 100%;
-      width: auto;
-      display: block;
-      filter: drop-shadow(0 0 12px rgba(255,180,0,0.35));
+    .logo-item {
+      height:100%;
+      width:auto;
+      display:block;
+      flex-shrink:0;
+      filter: drop-shadow(0 0 10px rgba(255,180,0,0.3));
     }
 
-    @keyframes logoScroll {
-      0%   { left: -220px; }
-      100% { left: 100vw;  }
-    }
-
-    /* ─── ENGRANE – esquina inferior derecha del header ── */
+    /* ── ENGRANE ── */
     #gear-btn {
-      position: absolute;
-      bottom: 8px;
-      right: 12px;
-      width: 38px;
-      height: 38px;
-      cursor: pointer;
-      z-index: 10;
-      opacity: 0.75;
-      transition: opacity .2s;
+      position:absolute; bottom:8px; right:12px;
+      width:38px; height:38px;
+      cursor:pointer; z-index:10;
+      opacity:0.75; transition:opacity .2s;
     }
-    #gear-btn:hover { opacity: 1; }
+    #gear-btn:hover { opacity:1; }
     #gear-btn svg {
-      width: 100%; height: 100%;
+      width:100%; height:100%;
       animation: gearSpin 6s linear infinite;
     }
     @keyframes gearSpin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
+      from { transform:rotate(0deg); }
+      to   { transform:rotate(360deg); }
     }
 
-    /* ─── ZONA INFERIOR 80% – VIDEO ───────────────────── */
+    /* ── 70% MEDIO – VIDEO ── */
     #video-zone {
-      width: 100%;
-      flex: 1;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      width:100%; height:70vh;
+      background:#000;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+      flex-shrink:0;
     }
-
     #main-video {
-      /* Mantiene aspecto original del video */
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: 100%;
-      object-fit: contain;
-      display: block;
+      max-width:100%; max-height:100%;
+      width:auto; height:100%;
+      object-fit:contain; display:block;
     }
 
-    /* ─── PANTALLA PRINCIPAL (canvas) ──────────────────── */
-    #screen-main {
-      width: 100%; height: 100%;
-      display: flex;
-      flex-direction: column;
+    /* ── 10% INFERIOR – TICKER ── */
+    #ticker-zone {
+      width:100%; height:10vh;
+      background:#000;
+      position:relative;
+      overflow:hidden;
+      flex-shrink:0;
+      display:flex; align-items:center;
+      border-top:1px solid #111;
     }
 
-    /* ─── MENÚ DEL ENGRANE ─────────────────────────────── */
+    #ticker-track {
+      position:absolute;
+      white-space:nowrap;
+      display:flex;
+      align-items:center;
+      gap:80px;
+      font-size:clamp(1rem, 2.4vh, 1.5rem);
+      font-weight:800;
+      letter-spacing:0.15em;
+      text-transform:uppercase;
+      will-change:transform;
+    }
+
+    .ticker-msg {
+      animation: neonCycle 3s linear infinite;
+      text-shadow:
+        0 0 6px currentColor,
+        0 0 16px currentColor,
+        0 0 32px currentColor;
+    }
+
+    @keyframes neonCycle {
+      0%   { color:#ff0044; }
+      20%  { color:#ff9900; }
+      40%  { color:#00ff88; }
+      60%  { color:#00cfff; }
+      80%  { color:#cc00ff; }
+      100% { color:#ff0044; }
+    }
+
+    .ticker-sep { color:#444; }
+
+
+    /* ══════════════════════════════════════════
+       MENÚ OVERLAY
+    ══════════════════════════════════════════ */
     #menu-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.88);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
+      display:none;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.92);
+      z-index:200;
+      align-items:center; justify-content:center;
     }
-    #menu-overlay.active {
-      display: flex;
-    }
+    #menu-overlay.active { display:flex; }
 
     #menu-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      padding: 40px;
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 16px;
-      box-shadow: 0 0 60px rgba(0,0,0,0.8);
-      max-width: 500px;
-      width: 90%;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px; padding:36px;
+      background:#111;
+      border:1px solid #2a2a2a;
+      border-radius:18px;
+      box-shadow:0 0 80px rgba(0,0,0,0.9);
+      max-width:460px; width:92%;
+    }
+
+    #menu-title {
+      grid-column:1/-1;
+      text-align:center; color:#555;
+      font-size:0.7rem; letter-spacing:0.3em;
+      text-transform:uppercase; margin-bottom:6px;
     }
 
     .menu-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 28px 20px;
-      background: #1a1a1a;
-      border: 2px solid #333;
-      border-radius: 12px;
-      color: #fff;
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      cursor: pointer;
-      transition: background .2s, border-color .2s, transform .15s;
-      user-select: none;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:10px; padding:26px 16px;
+      background:#181818;
+      border:2px solid #2e2e2e;
+      border-radius:14px;
+      color:#fff; font-size:1rem; font-weight:700;
+      letter-spacing:0.14em;
+      cursor:pointer;
+      transition:background .18s, border-color .18s, transform .12s;
+      user-select:none;
     }
-    .menu-btn:hover {
-      background: #242424;
-      border-color: #666;
-      transform: translateY(-2px);
-    }
-    .menu-btn .btn-icon {
-      font-size: 1.8rem;
-      line-height: 1;
-    }
+    .menu-btn:hover { background:#232323; border-color:#555; transform:translateY(-2px); }
+    .menu-btn .btn-icon { font-size:1.7rem; line-height:1; }
 
-    /* RUN PROJECT ocupa toda la fila */
     .menu-btn.run {
-      grid-column: 1 / -1;
-      background: linear-gradient(135deg, #e8a000, #ff4f00);
-      border-color: transparent;
-      font-size: 1.25rem;
-      letter-spacing: 0.2em;
-      padding: 32px;
+      grid-column:1/-1;
+      background:linear-gradient(135deg,#e8a000,#ff4f00);
+      border-color:transparent;
+      font-size:1.2rem; letter-spacing:0.22em; padding:30px;
     }
-    .menu-btn.run:hover {
-      filter: brightness(1.15);
-      border-color: transparent;
-      transform: translateY(-2px);
+    .menu-btn.run:hover { filter:brightness(1.12); border-color:transparent; transform:translateY(-2px); }
+
+
+    /* ══════════════════════════════════════════
+       PANELES COMPARTIDOS
+    ══════════════════════════════════════════ */
+    .panel {
+      display:none;
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.95);
+      z-index:300;
+      flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:22px; padding:30px;
+    }
+    .panel.active { display:flex; }
+
+    .panel h2 {
+      color:#777; font-size:0.95rem;
+      letter-spacing:0.28em; text-transform:uppercase;
     }
 
-    /* Título del menú */
-    #menu-title {
-      grid-column: 1 / -1;
-      text-align: center;
-      color: #888;
-      font-size: 0.75rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
+    .panel-close {
+      margin-top:4px;
+      padding:11px 34px;
+      background:transparent;
+      border:2px solid #333;
+      border-radius:10px;
+      color:#666; font-size:0.82rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      cursor:pointer;
+      transition:border-color .18s, color .18s;
     }
+    .panel-close:hover { border-color:#fff; color:#fff; }
+
+
+    /* ══════════════════════════════════════════
+       PANEL – VIDEO
+    ══════════════════════════════════════════ */
+    #video-gallery {
+      display:flex; flex-wrap:wrap;
+      gap:14px; justify-content:center;
+      max-width:680px;
+      max-height:55vh; overflow-y:auto;
+    }
+
+    .vid-card {
+      width:150px;
+      background:#181818;
+      border:2px solid #2e2e2e;
+      border-radius:12px;
+      padding:18px 12px;
+      text-align:center;
+      cursor:pointer;
+      color:#bbb;
+      font-size:0.8rem; font-weight:600;
+      letter-spacing:0.08em;
+      transition:border-color .18s, transform .12s;
+    }
+    .vid-card:hover { border-color:#e8a000; transform:translateY(-2px); }
+    .vid-card.active-vid { border-color:#00ff88; color:#00ff88; }
+    .vid-card .vid-icon { font-size:2rem; margin-bottom:8px; }
+
+
+    /* ══════════════════════════════════════════
+       PANEL – LOGO
+    ══════════════════════════════════════════ */
+    #logo-drop-area {
+      width:270px; height:150px;
+      border:2px dashed #3a3a3a;
+      border-radius:14px;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:10px; color:#555;
+      font-size:0.82rem; letter-spacing:0.1em;
+      cursor:pointer;
+      transition:border-color .2s, color .2s;
+    }
+    #logo-drop-area:hover { border-color:#e8a000; color:#e8a000; }
+    #logo-drop-area .drop-icon { font-size:2.2rem; }
+
+    #logo-preview {
+      max-height:90px; max-width:260px;
+      object-fit:contain; display:none;
+      border-radius:8px;
+    }
+
+    .panel-note {
+      color:#444; font-size:0.73rem;
+      text-align:center; max-width:300px;
+      line-height:1.6; letter-spacing:0.05em;
+    }
+
+
+    /* ══════════════════════════════════════════
+       PANEL – TEXTO
+    ══════════════════════════════════════════ */
+    #texto-input-wrap {
+      display:flex; gap:10px;
+      width:100%; max-width:480px;
+    }
+
+    #texto-input {
+      flex:1;
+      background:#181818;
+      border:2px solid #333;
+      border-radius:10px;
+      padding:11px 15px;
+      color:#fff; font-size:0.95rem;
+      letter-spacing:0.08em; outline:none;
+      text-transform:uppercase;
+      transition:border-color .18s;
+    }
+    #texto-input:focus { border-color:#00cfff; }
+    #texto-input::placeholder { color:#3a3a3a; text-transform:none; font-size:0.85rem; }
+
+    #texto-add-btn {
+      padding:11px 20px;
+      background:linear-gradient(135deg,#00cfff,#0055ee);
+      border:none; border-radius:10px;
+      color:#fff; font-weight:700; font-size:1.2rem;
+      cursor:pointer; transition:filter .18s;
+    }
+    #texto-add-btn:hover { filter:brightness(1.15); }
+
+    #texto-list {
+      width:100%; max-width:480px;
+      max-height:190px; overflow-y:auto;
+      display:flex; flex-direction:column; gap:8px;
+    }
+
+    .texto-item {
+      display:flex; align-items:center;
+      justify-content:space-between;
+      background:#181818;
+      border:1px solid #272727;
+      border-radius:8px;
+      padding:9px 14px;
+      color:#ccc; font-size:0.82rem;
+      letter-spacing:0.08em; text-transform:uppercase;
+    }
+    .del-btn {
+      background:none; border:none;
+      color:#444; cursor:pointer; font-size:1rem;
+      padding:0 4px; transition:color .15s;
+    }
+    .del-btn:hover { color:#ff4444; }
+
   </style>
 </head>
 <body>
-
 <div id="app">
 
-  <!-- ── PANTALLA PRINCIPAL ── -->
-  <div id="screen-main">
-
-    <!-- 20% SUPERIOR -->
-    <div id="header">
-      <!-- Logo animado -->
-      <div id="logo-wrap">
-        <img src="IMG_000.PNG" alt="García Diseños Logo" id="logo-img"/>
-      </div>
-
-      <!-- Engrane -->
-      <div id="gear-btn" title="Configuración" onclick="openMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6"
-             stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06
-                   a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09
-                   A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83
-                   l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09
-                   A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83
-                   l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09
-                   a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83
-                   l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09
-                   a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </div>
+  <!-- ══ 20% SUPERIOR ══ -->
+  <div id="header">
+    <div id="logo-track">
+      <img class="logo-item" id="logo-garcia" src="IMG_000.PNG" alt="García Diseños"/>
+      <!-- Logo de usuario se agrega aquí dinámicamente -->
     </div>
 
-    <!-- 80% INFERIOR – VIDEO -->
-    <div id="video-zone">
-      <video id="main-video"
-             src="Screen000.mp4"
-             autoplay loop muted playsinline
-             preload="auto">
-      </video>
+    <div id="gear-btn" title="Configuración" onclick="openMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06
+                 a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09
+                 A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83
+                 l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09
+                 A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83
+                 l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09
+                 a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83
+                 l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09
+                 a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
     </div>
+  </div>
 
-  </div><!-- /screen-main -->
+  <!-- ══ 70% MEDIO – VIDEO ══ -->
+  <div id="video-zone">
+    <video id="main-video" src="Screen000.mp4"
+           autoplay loop muted playsinline preload="auto"></video>
+  </div>
+
+  <!-- ══ 10% INFERIOR – TICKER ══ -->
+  <div id="ticker-zone">
+    <div id="ticker-track"></div>
+  </div>
 
 </div><!-- /app -->
 
-<!-- ── MENÚ OVERLAY ── -->
+
+<!-- ══ MENÚ PRINCIPAL ══ -->
 <div id="menu-overlay" onclick="handleOverlayClick(event)">
   <div id="menu-box">
     <div id="menu-title">Panel de Control</div>
-
-    <div class="menu-btn" onclick="menuAction('video')">
-      <span class="btn-icon">🎬</span>
-      VIDEO
+    <div class="menu-btn" onclick="openPanel('video')">
+      <span class="btn-icon">🎬</span>VIDEO
     </div>
-
-    <div class="menu-btn" onclick="menuAction('logo')">
-      <span class="btn-icon">🖼️</span>
-      LOGO
+    <div class="menu-btn" onclick="openPanel('logo')">
+      <span class="btn-icon">🖼️</span>LOGO
     </div>
-
-    <div class="menu-btn" onclick="menuAction('texto')">
-      <span class="btn-icon">✏️</span>
-      TEXTO
+    <div class="menu-btn" onclick="openPanel('texto')">
+      <span class="btn-icon">✏️</span>TEXTO
     </div>
-
     <div class="menu-btn run" onclick="runProject()">
-      <span class="btn-icon">▶</span>
-      RUN PROJECT
+      <span class="btn-icon">▶</span>RUN PROJECT
     </div>
   </div>
 </div>
 
+
+<!-- ══ PANEL VIDEO ══ -->
+<div id="panel-video" class="panel">
+  <h2>🎬 &nbsp; Seleccionar Video</h2>
+  <div id="video-gallery">
+    <div style="color:#444;font-size:0.82rem;letter-spacing:0.1em;">Cargando galería...</div>
+  </div>
+  <button class="panel-close" onclick="closePanel('video')">← VOLVER</button>
+</div>
+
+
+<!-- ══ PANEL LOGO ══ -->
+<div id="panel-logo" class="panel">
+  <h2>🖼️ &nbsp; Agregar Segundo Logo</h2>
+
+  <div id="logo-drop-area" onclick="document.getElementById('logo-file-input').click()">
+    <span class="drop-icon">📂</span>
+    <span>SELECCIONAR LOGO</span>
+    <span style="font-size:0.72rem;color:#444;">PNG · JPG · SVG · WEBP</span>
+  </div>
+  <input type="file" id="logo-file-input" accept="image/*"
+         style="display:none" onchange="handleLogoUpload(event)"/>
+
+  <img id="logo-preview" alt="Preview"/>
+
+  <p class="panel-note">
+    García Diseños siempre va primero.<br/>
+    Tu logo aparece en cola · Solo esta sesión.
+  </p>
+
+  <button class="panel-close" onclick="closePanel('logo')">← VOLVER</button>
+</div>
+
+
+<!-- ══ PANEL TEXTO ══ -->
+<div id="panel-texto" class="panel">
+  <h2>✏️ &nbsp; Mensajes del Ticker</h2>
+
+  <div id="texto-input-wrap">
+    <input type="text" id="texto-input"
+           placeholder="Escribe tu mensaje..." maxlength="120"
+           onkeydown="if(event.key==='Enter') addTextoMsg()"/>
+    <button id="texto-add-btn" onclick="addTextoMsg()">+</button>
+  </div>
+
+  <div id="texto-list"></div>
+
+  <p class="panel-note">
+    Los mensajes corren en ciclo · Se borran al cerrar la página
+  </p>
+
+  <button class="panel-close" onclick="closePanel('texto')">← VOLVER</button>
+</div>
+
+
 <script>
-  // ── Ajustar animación del logo según su ancho real ──
-  const logoImg = document.getElementById('logo-img');
-  const logoWrap = document.getElementById('logo-wrap');
+/* ════════════════════════════════════════
+   LOGOS – animación de la pista
+════════════════════════════════════════ */
+const logoTrack  = document.getElementById('logo-track');
+const logoGarcia = document.getElementById('logo-garcia');
+let logoX   = 0;
+let logoRAF = null;
+const LOGO_SPEED = 1.8;
 
-  function updateLogoAnimation() {
-    const w = logoWrap.offsetWidth || 220;
-    // Recrea el keyframe con el ancho real
-    const styleId = 'logo-kf';
-    let s = document.getElementById(styleId);
-    if (!s) { s = document.createElement('style'); s.id = styleId; document.head.appendChild(s); }
-    s.textContent = `
-      @keyframes logoScroll {
-        0%   { left: -${w + 20}px; }
-        100% { left: 100vw; }
-      }
-    `;
-    // Reinicia la animación
-    logoWrap.style.animation = 'none';
-    void logoWrap.offsetWidth; // reflow
-    logoWrap.style.animation = 'logoScroll 10s linear infinite';
+function initLogoTrack() {
+  cancelAnimationFrame(logoRAF);
+  // Empieza desde fuera por la izquierda
+  logoX = -(logoTrack.offsetWidth + 80);
+  moveLogos();
+}
+
+function moveLogos() {
+  logoX += LOGO_SPEED;
+  // Cuando el track salió completamente por la derecha, lo manda al inicio
+  if (logoX > window.innerWidth + 80) {
+    logoX = -(logoTrack.offsetWidth + 80);
+  }
+  logoTrack.style.left = logoX + 'px';
+  logoRAF = requestAnimationFrame(moveLogos);
+}
+
+// Posicionar el track absolutamente (el CSS tiene top:50% con transform)
+logoTrack.style.position = 'absolute';
+logoTrack.style.top = '50%';
+logoTrack.style.transform = 'translateY(-50%)';
+logoTrack.style.left = '0px';
+
+logoGarcia.addEventListener('load', initLogoTrack);
+if (logoGarcia.complete) initLogoTrack();
+window.addEventListener('resize', initLogoTrack);
+
+
+/* ════════════════════════════════════════
+   VIDEO – galería desde videos/videos.json
+════════════════════════════════════════ */
+const DEFAULT_VIDEO = 'Screen000.mp4';
+let   currentVideo  = DEFAULT_VIDEO;
+const mainVideo     = document.getElementById('main-video');
+
+async function loadVideoGallery() {
+  const gallery = document.getElementById('video-gallery');
+  let extraVideos = [];
+
+  try {
+    const res = await fetch('videos/videos.json');
+    extraVideos = await res.json();
+  } catch(e) {
+    // No existe aún el JSON – solo mostramos el principal
   }
 
-  logoImg.addEventListener('load', updateLogoAnimation);
-  window.addEventListener('resize', updateLogoAnimation);
-  // Por si ya cargó (cache)
-  if (logoImg.complete) updateLogoAnimation();
+  const all = [
+    { name: 'VIDEO PRINCIPAL', file: DEFAULT_VIDEO },
+    ...extraVideos
+  ];
 
-  // ── Menú ──
-  function openMenu() {
-    document.getElementById('menu-overlay').classList.add('active');
-  }
-
-  function closeMenu() {
-    document.getElementById('menu-overlay').classList.remove('active');
-  }
-
-  function handleOverlayClick(e) {
-    // Cierra si se hace clic en el fondo, no en el box
-    if (e.target === document.getElementById('menu-overlay')) closeMenu();
-  }
-
-  function menuAction(tipo) {
-    // Placeholder – funciones a desarrollar en la siguiente fase
-    console.log('Acción seleccionada:', tipo);
-    // Por ahora solo notifica (sin alert para no interrumpir la presentación)
-  }
-
-  function runProject() {
-    closeMenu();
-    // Asegura que el video siga corriendo
-    const v = document.getElementById('main-video');
-    if (v.paused) v.play();
-  }
-
-  // ── Video: forzar play si el navegador lo pausó ──
-  document.getElementById('main-video').addEventListener('pause', function() {
-    this.play();
+  gallery.innerHTML = '';
+  all.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'vid-card' + (v.file === currentVideo ? ' active-vid' : '');
+    card.innerHTML = `<div class="vid-icon">🎬</div><div>${v.name}</div>`;
+    card.onclick = () => {
+      currentVideo = v.file;
+      mainVideo.src = v.file;
+      mainVideo.load();
+      mainVideo.play();
+      gallery.querySelectorAll('.vid-card').forEach(c => c.classList.remove('active-vid'));
+      card.classList.add('active-vid');
+    };
+    gallery.appendChild(card);
   });
-</script>
 
+  if (extraVideos.length === 0) {
+    const hint = document.createElement('div');
+    hint.style.cssText = 'color:#3a3a3a;font-size:0.74rem;text-align:center;width:100%;padding:10px 0;letter-spacing:0.08em;line-height:1.7';
+    hint.innerHTML = 'Agrega videos en la carpeta <strong style="color:#555">videos/</strong><br/>y registra en <strong style="color:#555">videos/videos.json</strong>';
+    gallery.appendChild(hint);
+  }
+}
+
+mainVideo.addEventListener('pause', () => { try { mainVideo.play(); } catch(e){} });
+
+
+/* ════════════════════════════════════════
+   LOGO – subida del usuario
+════════════════════════════════════════ */
+let userLogoURL = null;
+
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (userLogoURL) URL.revokeObjectURL(userLogoURL);
+  userLogoURL = URL.createObjectURL(file);
+
+  // Preview en el panel
+  const prev = document.getElementById('logo-preview');
+  prev.src = userLogoURL;
+  prev.style.display = 'block';
+
+  // Quitar logo previo del usuario si existe
+  const old = document.getElementById('logo-user');
+  if (old) old.remove();
+
+  // Agregar al track a continuación del logo de García
+  const img = document.createElement('img');
+  img.className = 'logo-item';
+  img.id = 'logo-user';
+  img.src = userLogoURL;
+  img.alt = 'Logo usuario';
+  logoTrack.appendChild(img);
+
+  // Reinicia la animación con el nuevo ancho total del track
+  img.onload = initLogoTrack;
+}
+
+
+/* ════════════════════════════════════════
+   TICKER – mensajes neón
+════════════════════════════════════════ */
+let tickerMessages = [];
+let tickerX   = 0;
+let tickerRAF = null;
+const TICKER_SPEED = 1.4;
+const tickerTrack  = document.getElementById('ticker-track');
+
+function buildTickerDOM() {
+  cancelAnimationFrame(tickerRAF);
+  tickerTrack.innerHTML = '';
+  if (tickerMessages.length === 0) return;
+
+  // Duplicamos para que el loop sea continuo y sin saltos
+  const doubled = [...tickerMessages, ...tickerMessages];
+  doubled.forEach((msg, i) => {
+    const span = document.createElement('span');
+    span.className = 'ticker-msg';
+    span.textContent = msg.toUpperCase();
+    // Offset para que cada mensaje tenga un color diferente
+    span.style.animationDelay = `${-(i * 0.5)}s`;
+    tickerTrack.appendChild(span);
+
+    if (i < doubled.length - 1) {
+      const sep = document.createElement('span');
+      sep.className = 'ticker-sep';
+      sep.textContent = ' ◆ ';
+      tickerTrack.appendChild(sep);
+    }
+  });
+
+  tickerX = window.innerWidth + 40;
+  moveTicker();
+}
+
+function moveTicker() {
+  tickerX -= TICKER_SPEED;
+  // Cuando la primera mitad salió, regresamos al inicio (loop invisible)
+  const half = tickerTrack.offsetWidth / 2;
+  if (tickerX < -(half + 60)) {
+    tickerX = window.innerWidth + 40;
+  }
+  tickerTrack.style.left = tickerX + 'px';
+  tickerRAF = requestAnimationFrame(moveTicker);
+}
+
+// Posicionar track absolutamente
+tickerTrack.style.position = 'absolute';
+
+function addTextoMsg() {
+  const input = document.getElementById('texto-input');
+  const val = input.value.trim();
+  if (!val) return;
+  tickerMessages.push(val);
+  input.value = '';
+  renderTextoList();
+  buildTickerDOM();
+}
+
+function removeTextoMsg(idx) {
+  tickerMessages.splice(idx, 1);
+  renderTextoList();
+  buildTickerDOM();
+}
+
+function renderTextoList() {
+  const list = document.getElementById('texto-list');
+  list.innerHTML = '';
+  tickerMessages.forEach((msg, i) => {
+    const div = document.createElement('div');
+    div.className = 'texto-item';
+    div.innerHTML = `<span>${msg.toUpperCase()}</span>
+      <button class="del-btn" onclick="removeTextoMsg(${i})">✕</button>`;
+    list.appendChild(div);
+  });
+}
+
+
+/* ════════════════════════════════════════
+   NAVEGACIÓN
+════════════════════════════════════════ */
+function openMenu() {
+  document.getElementById('menu-overlay').classList.add('active');
+}
+function closeMenu() {
+  document.getElementById('menu-overlay').classList.remove('active');
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('menu-overlay')) closeMenu();
+}
+function openPanel(tipo) {
+  closeMenu();
+  if (tipo === 'video') loadVideoGallery();
+  document.getElementById('panel-' + tipo).classList.add('active');
+}
+function closePanel(tipo) {
+  document.getElementById('panel-' + tipo).classList.remove('active');
+}
+function runProject() {
+  closeMenu();
+  try { mainVideo.play(); } catch(e) {}
+}
+</script>
 </body>
 </html>

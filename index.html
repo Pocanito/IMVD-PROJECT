@@ -493,7 +493,7 @@ async function loadVideoGallery() {
   let extraVideos = [];
 
   try {
-    const res = await fetch('./videos/videos.json');
+    const res = await fetch('./videos.json');
     extraVideos = await res.json();
   } catch(e) {
     // No existe aún el JSON – solo mostramos el principal

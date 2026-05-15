@@ -489,14 +489,14 @@ let listaVideos = [];
 let currentIndex = 0;
 
 // Carga el JSON una sola vez al iniciar
-fetch('videos.json')
+fetch('/IMVD-PROJECT/videos.json')
   .then(res => res.json())
   .then(data => { listaVideos = data; })
   .catch(() => { listaVideos = []; });
 
 function cargarVideo(indice, card) {
   currentIndex = indice;
-  mainVideo.src = listaVideos[indice].file;
+ mainVideo.src = '/IMVD-PROJECT/' + listaVideos[indice].file;
   mainVideo.load();
   mainVideo.play();
   document.querySelectorAll('.vid-card').forEach(c => c.classList.remove('active-vid'));

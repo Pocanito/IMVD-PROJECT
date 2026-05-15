@@ -482,50 +482,61 @@ window.addEventListener('resize', initLogoTrack);
 
 
 /* ════════════════════════════════════════
-   VIDEO – galería desde videos/videos.json
+   VIDEO – galería desde videos.json
 ════════════════════════════════════════ */
-const DEFAULT_VIDEO = 'Screen000.mp4';
-let   currentVideo  = DEFAULT_VIDEO;
-const mainVideo     = document.getElementById('main-video');
+const mainVideo = document.getElementById('main-video');
+let listaVideos = [];
+let currentIndex = 0;
 
-async function loadVideoGallery() {
+// Carga el JSON una sola vez al iniciar
+fetch('videos.json')
+  .then(res => res.json())
+  .then(data => { listaVideos = data; })
+  .catch(() => { listaVideos = []; });
+
+function cargarVideo(indice, card) {
+  currentIndex = indice;
+  mainVideo.src = listaVideos[indice].file;
+  mainVideo.load();
+  mainVideo.play();
+  document.querySelectorAll('.vid-card').forEach(c => c.classList.remove('active-vid'));
+  card.classList.add('active-vid');
+}
+
+function loadVideoGallery() {
   const gallery = document.getElementById('video-gallery');
-  let extraVideos = [];
-
-  try {
-    const res = await fetch('./videos.json');
-    extraVideos = await res.json();
-  } catch(e) {
-    // No existe aún el JSON – solo mostramos el principal
-  }
-
-  const all = [
-    { name: 'VIDEO PRINCIPAL', file: DEFAULT_VIDEO },
-    ...extraVideos
-  ];
-
   gallery.innerHTML = '';
-  all.forEach(v => {
-    const card = document.createElement('div');
-    card.className = 'vid-card' + (v.file === currentVideo ? ' active-vid' : '');
-    card.innerHTML = `<div class="vid-icon">🎬</div><div>${v.name}</div>`;
-    card.onclick = () => {
-      currentVideo = v.file;
-      mainVideo.src = v.file;
-      mainVideo.load();
-      mainVideo.play();
-      gallery.querySelectorAll('.vid-card').forEach(c => c.classList.remove('active-vid'));
-      card.classList.add('active-vid');
-    };
-    gallery.appendChild(card);
-  });
 
-  if (extraVideos.length === 0) {
+  // Siempre primero el video principal fijo
+  const cardPrincipal = document.createElement('div');
+  cardPrincipal.className = 'vid-card' + (currentIndex === -1 ? ' active-vid' : '');
+  cardPrincipal.innerHTML = `<div class="vid-icon">🎬</div><div>VIDEO PRINCIPAL</div>`;
+  cardPrincipal.onclick = () => {
+    currentIndex = -1;
+    mainVideo.src = 'Screen000.mp4';
+    mainVideo.load();
+    mainVideo.play();
+    document.querySelectorAll('.vid-card').forEach(c => c.classList.remove('active-vid'));
+    cardPrincipal.classList.add('active-vid');
+  };
+  gallery.appendChild(cardPrincipal);
+
+  // Videos de la galería desde el JSON
+  if (listaVideos.length === 0) {
     const hint = document.createElement('div');
     hint.style.cssText = 'color:#3a3a3a;font-size:0.74rem;text-align:center;width:100%;padding:10px 0;letter-spacing:0.08em;line-height:1.7';
-    hint.innerHTML = 'Agrega videos en la carpeta <strong style="color:#555">videos/</strong><br/>y registra en <strong style="color:#555">videos/videos.json</strong>';
+    hint.innerHTML = 'Agrega videos en <strong style="color:#555">videos/</strong><br/>y registra en <strong style="color:#555">videos.json</strong>';
     gallery.appendChild(hint);
+    return;
   }
+
+  listaVideos.forEach((v, i) => {
+    const card = document.createElement('div');
+    card.className = 'vid-card' + (i === currentIndex ? ' active-vid' : '');
+    card.innerHTML = `<div class="vid-icon">🎬</div><div>${v.name}</div>`;
+    card.onclick = () => cargarVideo(i, card);
+    gallery.appendChild(card);
+  });
 }
 
 mainVideo.addEventListener('pause', () => { try { mainVideo.play(); } catch(e){} });
